@@ -36,6 +36,7 @@ my $outputDir = abs_path ($args->{"outputDir"});
 #$outputDir =~ s/ /\\ /g;
 print STDERR "INPUT ($inputDir)\nOUTPUT ($outputDir)\n";
 
+# the exif tags to look for in the order of authority - i.e. what is most likely to be correct
 my @dateTags = (
     "CreateDate",
     "DateTimeCreated",
@@ -46,7 +47,7 @@ my @dateTags = (
     "TrackCreateDate",
     "GpsDateTime",
     "GpsDateStamp",
-    "FileModificationDateTime"
+    "FileModifyDate"
 );
 
 sub resolveFile {
@@ -101,11 +102,13 @@ sub getDateForFile {
             }
         }
 
-        my $filetime = localtime (stat($filename)->mtime);
-        my $date = $filetime->ymd ("-") . "-" . $filetime->hms ("-");
-        print STDERR " (FileCreateDate -> $date)";
-        my $copyToPath = pathFromDate ($date, $leaf, $type);
-        print STDERR "\n  -> (MOVE TO) $copyToPath\n";
+        print STDERR " (NO DATE)\n";
+
+        #my $filetime = localtime (stat($filename)->mtime);
+        #my $date = $filetime->ymd ("-") . "-" . $filetime->hms ("-");
+        #print STDERR " (FileCreateDate -> $date)";
+        #my $copyToPath = pathFromDate ($date, $leaf, $type);
+        #print STDERR "\n  -> (MOVE TO) $copyToPath\n";
         #move ($filename, $copyToPath);
     } else {
         # remove the 0-size file?

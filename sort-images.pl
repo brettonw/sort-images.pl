@@ -117,7 +117,7 @@ sub getDateForFile {
 }
 
 my $exifTypes = {};
-foreach my $exifType ("jpg", "jpeg", "gif", "mov", "heic") {
+foreach my $exifType ("jpg", "jpeg", "gif", "mov", "heic", "png") {
     $exifTypes->{$exifType} = $exifType;
 }
 

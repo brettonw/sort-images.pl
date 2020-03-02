@@ -1,6 +1,7 @@
 #! /usr/bin/env perl
 
 use warnings FATAL => 'all';
+use strict;
 use File::Find;
 use File::Basename;
 use File::Copy;

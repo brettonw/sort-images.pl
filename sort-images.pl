@@ -86,6 +86,16 @@ sub getDateForFile {
     my $size = -s $filename;
     print STDERR " ($size)";
     if ($size > 0) {
+        # get the mac os creation date
+        my $macDate = `GetFileInfo -d "$filename"`;
+        chop ($macDate);
+        if ($macDate =~ /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/) {
+            $macDate = "$3-$1-$2-$4-$5-$6";
+        } else {
+            $macDate = "9999-99-99-99-99-99";
+        }
+        print STDERR " (MacOS Creation Date -> $macDate)";
+
         # look for useful dates in the exif data
         foreach my $dateTag (@dateTags) {
             my $date = `exiftool -$dateTag "$filename" 2> /dev/null`;
@@ -94,7 +104,16 @@ sub getDateForFile {
                 # we got a date of some sort... process it and move the file
                 $date =~ s/^[^:]*:\s*//;
                 $date = join ('-', split (/[: ]/, $date));
+                if ($date =~ /^(\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2})/) {
+                    $date = $1;
+                } elsif ($date =~ /^(\d{4}-\d{2}-\d{2})/) {
+                    $date = "$1-00-00-00";
+                }
                 print STDERR " ($dateTag -> $date)";
+                if ($macDate lt $date) {
+                    $date = $macDate;
+                    print STDERR (" (Overriding with MacOS Creation Date)");
+                }
                 my $copyToPath = pathFromDate ($date, $leaf, $type);
                 print STDERR "\n  -> (MOVE TO) $copyToPath\n";
                 move ($filename, $copyToPath);
